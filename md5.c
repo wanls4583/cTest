@@ -4,14 +4,6 @@
 #include <math.h>
 #include "md5.h"
 
-void show_hash(unsigned int a, unsigned int b, unsigned int c, unsigned int d) {
-    printf("%.02x", (unsigned char *)(&a));
-    printf("%.02x", (unsigned char *)(&b));
-    printf("%.02x", (unsigned char *)(&c));
-    printf("%.02x", (unsigned char *)(&d));
-    printf("\n");
-}
-
 unsigned int F( unsigned int x, unsigned int y, unsigned int z )
 {
   return ( x & y ) | ( ~x & z );
@@ -84,7 +76,6 @@ void md5_block_operate( const unsigned char *input,
   ROUND( F, d, a, b, c, 13, 12, 14 );
   ROUND( F, c, d, a, b, 14, 17, 15 );
   ROUND( F, b, c, d, a, 15, 22, 16 );
-  show_hash(a, b, c, d);
   
   // Round 2
   ROUND( G, a, b, c, d, 1, 5, 17 );
@@ -103,7 +94,6 @@ void md5_block_operate( const unsigned char *input,
   ROUND( G, d, a, b, c, 2, 9, 30 );
   ROUND( G, c, d, a, b, 7, 14, 31 );
   ROUND( G, b, c, d, a, 12, 20, 32 );
-  show_hash(a, b, c, d);
   
   // Round 3
   ROUND( H, a, b, c, d, 5, 4, 33 );
@@ -122,7 +112,6 @@ void md5_block_operate( const unsigned char *input,
   ROUND( H, d, a, b, c, 12, 11, 46 );
   ROUND( H, c, d, a, b, 15, 16, 47 );
   ROUND( H, b, c, d, a, 2, 23, 48 );
-  show_hash(a, b, c, d);
   
   // Round 4
   ROUND( I, a, b, c, d, 0, 6, 49 );
@@ -141,7 +130,6 @@ void md5_block_operate( const unsigned char *input,
   ROUND( I, d, a, b, c, 11, 10, 62 );
   ROUND( I, c, d, a, b, 2, 15, 63 );
   ROUND( I, b, c, d, a, 9, 21, 64 );
-  show_hash(a, b, c, d);
   
   hash[ 0 ] += a;
   hash[ 1 ] += b;
