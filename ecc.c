@@ -171,7 +171,7 @@ void multiply_point( point *p1, huge *k, huge *a, huge *p )
   free_huge( &dp.y );
 }
 
-int main() {
+int main_() {
     int _a = 1, b = 1, _p = 23;
     point p1, p2;
     huge a, p, k;
