@@ -216,8 +216,31 @@ void test_sha1() {
     show_hash(hash, hash_len);
 }
 
+void test_sha256() {
+    int str_len;
+    unsigned int* hash;
+    int hash_len;
+
+    unsigned char* s[] = {
+        (unsigned char*)"abc",
+        (unsigned char*)"abcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabca",
+        (unsigned char*)"abcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabca123",
+        (unsigned char*)"abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcddddddddddddddddddddddddddddddqqqqqqqqeeee123"
+    };
+    hash_len = SHA256_RESULT_SIZE;
+    for (int i = 0; i < 4; i++) {
+        hash = malloc(sizeof(int) * SHA256_RESULT_SIZE);
+        str_len = (int)strlen((const char*)(s[i]));
+        memcpy(hash, sha256_initial_hash, sizeof(int) * SHA256_RESULT_SIZE);
+        digest_hash(s[i], str_len, hash, sha256_block_operate, sha1_finalize);
+        printf("str_len=%d\n", str_len);
+        show_hash(hash, hash_len);
+    }
+}
+
 int main() {
-    test_sha1();
+    // test_sha1();
+    test_sha256();
 
     return 0;
 }

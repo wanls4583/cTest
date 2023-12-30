@@ -133,7 +133,7 @@ void sha1_block_operate( const unsigned char *block, unsigned int hash[ SHA1_RES
   hash[ 4 ] = htonl( hash[ 4 ] );
 }
 
-static const unsigned int sha256_initial_hash[] =
+unsigned int sha256_initial_hash[] =
 {
   0x67e6096a,
   0x85ae67bb,
