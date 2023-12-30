@@ -6,6 +6,14 @@
 #include "md5.h"
 #include "sha.h"
 
+void show_hash(unsigned int* hash, int hash_len) {
+    unsigned char* display_hash = (unsigned char*)hash;
+    for (int i = 0; i < (hash_len * 4); i++) {
+        printf("%.02x", display_hash[i]);
+    }
+    printf("\n");
+}
+
 /**
  * Generic digest hash computation. The hash should be set to its initial
  * value *before* calling this function.
@@ -187,21 +195,29 @@ jdavies@localhost$ digest -md5 abc
 jdavies@localhost$ digest -sha1 abc
 a9993e364706816aba3e25717850c26c9cd0d89d
 */
-int main() {
+
+void test_sha1() {
     unsigned char* decoded_input;
-    int decoded_len;
+    int str_len;
     unsigned int* hash;
     int hash_len;
 
-    decoded_len = hex_decode((unsigned char*)"abc", &decoded_input);
-    hash = malloc(sizeof(int) * MD5_RESULT_SIZE);
-    hash_len = MD5_RESULT_SIZE;
-    memcpy(hash, md5_initial_hash, sizeof(int) * MD5_RESULT_SIZE);
-    digest_hash(decoded_input, decoded_len, hash, md5_block_operate, md5_finalize);
+    unsigned char s1[] = "abc";
+    unsigned char s2[] = "abcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabca";
+    unsigned char s3[] = "abcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabcaabcabcabcabcabca123";
+    unsigned char s4[] = "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcddddddddddddddddddddddddddddddqqqqqqqqeeee123";
+    hash_len = SHA1_RESULT_SIZE;
 
-    unsigned char* display_hash = (unsigned char*)hash;
-    for (int i = 0; i < (hash_len * 4); i++) {
-        printf("%.02x", display_hash[i]);
-    }
+    hash = malloc(sizeof(int) * SHA1_RESULT_SIZE);
+    str_len = (int)strlen((const char*)s1);
+    memcpy(hash, sha1_initial_hash, sizeof(int) * SHA1_RESULT_SIZE);
+    digest_hash(s1, str_len, hash, sha1_block_operate, sha1_finalize);
+    printf("str_len=%d\n", str_len);
+    show_hash(hash, hash_len);
+}
+
+int main() {
+    test_sha1();
+
     return 0;
 }
