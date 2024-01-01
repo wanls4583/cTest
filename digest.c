@@ -196,6 +196,23 @@ jdavies@localhost$ digest -sha1 abc
 a9993e364706816aba3e25717850c26c9cd0d89d
 */
 
+void test_md5() {
+    unsigned char* decoded_input;
+    int str_len;
+    unsigned int* hash;
+    int hash_len;
+
+    unsigned char s1[] = "abc";
+    hash_len = MD5_RESULT_SIZE;
+
+    hash = malloc(sizeof(int) * MD5_RESULT_SIZE);
+    str_len = (int)strlen((const char*)s1);
+    memcpy(hash, md5_initial_hash, sizeof(int) * MD5_RESULT_SIZE);
+    digest_hash(s1, str_len, hash, md5_block_operate, md5_finalize);
+    printf("str_len=%d\n", str_len);
+    show_hash(hash, hash_len);
+}
+
 void test_sha1() {
     unsigned char* decoded_input;
     int str_len;
@@ -238,9 +255,10 @@ void test_sha256() {
     }
 }
 
-int main() {
-    // test_sha1();
-    test_sha256();
+// int main() {
+//     test_md5();
+//     // test_sha1();
+//     // test_sha256();
 
-    return 0;
-}
+//     return 0;
+// }

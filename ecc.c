@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "huge.h"
 #include "ecc.h"
 #include "hex.h"
@@ -171,7 +172,8 @@ void multiply_point( point *p1, huge *k, huge *a, huge *p )
   free_huge( &dp.y );
 }
 
-int main_() {
+int main() {
+    clock_t start, end;
     int _a = 1, b = 1, _p = 23;
     point p1, p2;
     huge a, p, k;
@@ -218,7 +220,7 @@ int main_() {
     // add_points(&p1, &p2, &p);
     // show_hex(p1.x.rep, p1.x.size);
     // show_hex(p1.y.rep, p1.y.size);
-
+    start = clock();
     for (int x = 0; x < 1000; x += 1) {
         // if (x != 126) {
         //     continue;
@@ -239,5 +241,8 @@ int main_() {
         show_hex(p1.x.rep, p1.x.size);
         show_hex(p1.y.rep, p1.y.size);
     }
+    end = clock();
+    printf("duration: %fs", (double)(end - start) / CLOCKS_PER_SEC);
+    
     return 0;
 }
