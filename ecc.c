@@ -172,77 +172,77 @@ void multiply_point( point *p1, huge *k, huge *a, huge *p )
   free_huge( &dp.y );
 }
 
-int main() {
-    clock_t start, end;
-    int _a = 1, b = 1, _p = 23;
-    point p1, p2;
-    huge a, p, k;
-    set_huge(&a, _a);
-    set_huge(&p, _p);
+// int main() {
+//     clock_t start, end;
+//     int _a = 1, b = 1, _p = 23;
+//     point p1, p2;
+//     huge a, p, k;
+//     set_huge(&a, _a);
+//     set_huge(&p, _p);
 
-    // for (int x = 0; x < 100; x += 1) {
-    //     // if (x != 90) {
-    //     //   continue;
-    //     // }
-    //     int y = x * x * x + _a * x * x + b, r = y * 2 % _p;
-    //     printf("x=%d,y=%d,r=%d\n", x, y, r);
-    //     set_huge(&p1.x, x);
-    //     set_huge(&p1.y, y);
-    //     double_point(&p1, &a, &p);
-    //     show_hex(p1.x.rep, p1.x.size);
-    //     show_hex(p1.y.rep, p1.y.size);
-    // }
+//     // for (int x = 0; x < 100; x += 1) {
+//     //     // if (x != 90) {
+//     //     //   continue;
+//     //     // }
+//     //     int y = x * x * x + _a * x * x + b, r = y * 2 % _p;
+//     //     printf("x=%d,y=%d,r=%d\n", x, y, r);
+//     //     set_huge(&p1.x, x);
+//     //     set_huge(&p1.y, y);
+//     //     double_point(&p1, &a, &p);
+//     //     show_hex(p1.x.rep, p1.x.size);
+//     //     show_hex(p1.y.rep, p1.y.size);
+//     // }
 
-    // set_huge(&p1.x, 1);
-    // set_huge(&p1.y, 0);
-    // double_point(&p1, &a, &p);
-    // show_hex(p1.x.rep, p1.x.size);
-    // show_hex(p1.y.rep, p1.y.size);
+//     // set_huge(&p1.x, 1);
+//     // set_huge(&p1.y, 0);
+//     // double_point(&p1, &a, &p);
+//     // show_hex(p1.x.rep, p1.x.size);
+//     // show_hex(p1.y.rep, p1.y.size);
 
-    // for (int x = 0; x < 200; x += 2) {
-    //     int x1 = x, x2 = x+1;
-    //     int y1 = x1 * x1 * x1 + _a * x1 * x1 + b;
-    //     int y2 = x2 * x2 * x2 + _a * x2 * x2 + b;
-    //     printf("x1=%d,y1=%d,x2=%d,y2=%d\n", x1, y1, x2, y2);
-    //     set_huge(&p1.x, x1);
-    //     set_huge(&p1.y, y1);
-    //     set_huge(&p2.x, x2);
-    //     set_huge(&p2.y, y2);
-    //     add_points(&p1, &p2, &p);
-    //     show_hex(p1.x.rep, p1.x.size);
-    //     show_hex(p1.y.rep, p1.y.size);
-    // }
+//     // for (int x = 0; x < 200; x += 2) {
+//     //     int x1 = x, x2 = x+1;
+//     //     int y1 = x1 * x1 * x1 + _a * x1 * x1 + b;
+//     //     int y2 = x2 * x2 * x2 + _a * x2 * x2 + b;
+//     //     printf("x1=%d,y1=%d,x2=%d,y2=%d\n", x1, y1, x2, y2);
+//     //     set_huge(&p1.x, x1);
+//     //     set_huge(&p1.y, y1);
+//     //     set_huge(&p2.x, x2);
+//     //     set_huge(&p2.y, y2);
+//     //     add_points(&p1, &p2, &p);
+//     //     show_hex(p1.x.rep, p1.x.size);
+//     //     show_hex(p1.y.rep, p1.y.size);
+//     // }
 
-    // set_huge(&p1.x, 0x04);
-    // set_huge(&p1.y, 0x51);
-    // set_huge(&p2.x, 1);
-    // set_huge(&p2.y, 3);
-    // add_points(&p1, &p2, &p);
-    // show_hex(p1.x.rep, p1.x.size);
-    // show_hex(p1.y.rep, p1.y.size);
-    start = clock();
-    for (int x = 0; x < 1000; x += 1) {
-        // if (x != 126) {
-        //     continue;
-        // }
-        int y = x * x * x + _a * x * x + b, r = y * 2 % _p;
-        printf("x=%d,y=%d,r=%d\n", x, y, r);
-        set_huge(&p1.x, x);
-        set_huge(&p1.y, y);
-        set_huge(&k, 1234);
-        multiply_point(&p1, &k, &a, &p);
-        show_hex(p1.x.rep, p1.x.size);
-        show_hex(p1.y.rep, p1.y.size);
+//     // set_huge(&p1.x, 0x04);
+//     // set_huge(&p1.y, 0x51);
+//     // set_huge(&p2.x, 1);
+//     // set_huge(&p2.y, 3);
+//     // add_points(&p1, &p2, &p);
+//     // show_hex(p1.x.rep, p1.x.size);
+//     // show_hex(p1.y.rep, p1.y.size);
+//     start = clock();
+//     for (int x = 0; x < 1000; x += 1) {
+//         // if (x != 126) {
+//         //     continue;
+//         // }
+//         int y = x * x * x + _a * x * x + b, r = y * 2 % _p;
+//         printf("x=%d,y=%d,r=%d\n", x, y, r);
+//         set_huge(&p1.x, x);
+//         set_huge(&p1.y, y);
+//         set_huge(&k, 1234);
+//         multiply_point(&p1, &k, &a, &p);
+//         show_hex(p1.x.rep, p1.x.size);
+//         show_hex(p1.y.rep, p1.y.size);
 
-        set_huge(&p1.x, x);
-        set_huge(&p1.y, y);
-        set_huge(&k, 101);
-        multiply_point(&p1, &k, &a, &p);
-        show_hex(p1.x.rep, p1.x.size);
-        show_hex(p1.y.rep, p1.y.size);
-    }
-    end = clock();
-    printf("duration: %fs", (double)(end - start) / CLOCKS_PER_SEC);
+//         set_huge(&p1.x, x);
+//         set_huge(&p1.y, y);
+//         set_huge(&k, 101);
+//         multiply_point(&p1, &k, &a, &p);
+//         show_hex(p1.x.rep, p1.x.size);
+//         show_hex(p1.y.rep, p1.y.size);
+//     }
+//     end = clock();
+//     printf("duration: %fs", (double)(end - start) / CLOCKS_PER_SEC);
     
-    return 0;
-}
+//     return 0;
+// }

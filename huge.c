@@ -667,3 +667,15 @@ void inv( huge *z, huge *a )
     }
   }
 }
+
+#include "hex.h"
+int main() {
+  huge a, b, c, d;
+  for (int i = 1; i <= 100; i++) {
+    set_huge(&a, 2);
+    set_huge(&b, i);
+    set_huge(&c, 23);
+    mod_pow(&a, &b, &c, &d);
+    show_hex(d.rep, d.size);
+  }
+}
