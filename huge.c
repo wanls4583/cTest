@@ -668,22 +668,22 @@ void inv( huge *z, huge *a )
   }
 }
 
-#include "hex.h"
-#include <time.h>
-int main() {
-  time_t start, end;
-  huge a, b, c, d;
+// #include "hex.h"
+// #include <time.h>
+// int main() {
+//   time_t start, end;
+//   huge a, b, c, d;
 
-  start = clock();
-  for (int i = 1; i <= 10000; i++) {
-    set_huge(&a, 2);
-    set_huge(&b, i);
-    set_huge(&c, 23);
-    mod_pow(&a, &b, &c, &d);
-    show_hex(d.rep, d.size);
-  }
-  end = clock();
-  printf("duration: %fs", (double)(end - start) / CLOCKS_PER_SEC);
+//   start = clock();
+//   for (int i = 1; i <= 10000; i++) {
+//     set_huge(&a, 2);
+//     set_huge(&b, i);
+//     set_huge(&c, 23);
+//     mod_pow(&a, &b, &c, &d);
+//     show_hex(d.rep, d.size);
+//   }
+//   end = clock();
+//   printf("duration: %fs", (double)(end - start) / CLOCKS_PER_SEC);
 
-  return 0;
-}
+//   return 0;
+// }
