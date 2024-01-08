@@ -279,50 +279,50 @@ jdavies@localhost$ rsa -d \ 0x40f73315d3f74703904e51e1c7\
 616263
 */
 
-int main() {
-  int pub_len;
-  int priv_len;
-  int modulus_len;
-  int data_len;
-  unsigned char *pub;
-  unsigned char *priv;
-  unsigned char *modulus;
-  unsigned char *data;
-  rsa_key public_key;
-  rsa_key private_key;
+// int main() {
+//   int pub_len;
+//   int priv_len;
+//   int modulus_len;
+//   int data_len;
+//   unsigned char *pub;
+//   unsigned char *priv;
+//   unsigned char *modulus;
+//   unsigned char *data;
+//   rsa_key public_key;
+//   rsa_key private_key;
 
-  public_key.modulus = ( huge * ) malloc( sizeof( huge ) );
-  public_key.exponent = ( huge * ) malloc( sizeof( huge ) );
-  private_key.modulus = ( huge * ) malloc( sizeof( huge ) );
-  private_key.exponent = ( huge * ) malloc( sizeof( huge ) );
+//   public_key.modulus = ( huge * ) malloc( sizeof( huge ) );
+//   public_key.exponent = ( huge * ) malloc( sizeof( huge ) );
+//   private_key.modulus = ( huge * ) malloc( sizeof( huge ) );
+//   private_key.exponent = ( huge * ) malloc( sizeof( huge ) );
 
-  modulus_len = sizeof( TestModulus );
-  modulus = TestModulus;
-  pub_len = sizeof( TestPublicKey );
-  priv_len = sizeof( TestPrivateKey );
-  pub = TestPublicKey;
-  priv = TestPrivateKey;
+//   modulus_len = sizeof( TestModulus );
+//   modulus = TestModulus;
+//   pub_len = sizeof( TestPublicKey );
+//   priv_len = sizeof( TestPrivateKey );
+//   pub = TestPublicKey;
+//   priv = TestPrivateKey;
 
-  unsigned char *encrypted;
-  int encrypted_len;
-  int decrypted_len;
-  unsigned char *decrypted;
+//   unsigned char *encrypted;
+//   int encrypted_len;
+//   int decrypted_len;
+//   unsigned char *decrypted;
 
-  load_huge( public_key.modulus, modulus, modulus_len );
-  load_huge( private_key.modulus, modulus, modulus_len );
-  load_huge( public_key.exponent, pub, pub_len );
-  load_huge( private_key.exponent, priv, priv_len );
-  show_hex(public_key.exponent->rep, public_key.exponent->size);
-  show_hex(private_key.exponent->rep, private_key.exponent->size);
+//   load_huge( public_key.modulus, modulus, modulus_len );
+//   load_huge( private_key.modulus, modulus, modulus_len );
+//   load_huge( public_key.exponent, pub, pub_len );
+//   load_huge( private_key.exponent, priv, priv_len );
+//   show_hex(public_key.exponent->rep, public_key.exponent->size);
+//   show_hex(private_key.exponent->rep, private_key.exponent->size);
 
-  data_len = 3;
-  data = (unsigned char *)"abc";
-  encrypted_len = rsa_encrypt( data, data_len, &encrypted, &public_key );
-  show_hex( encrypted, encrypted_len );
-  free( encrypted );
+//   data_len = 3;
+//   data = (unsigned char *)"abc";
+//   encrypted_len = rsa_encrypt( data, data_len, &encrypted, &public_key );
+//   show_hex( encrypted, encrypted_len );
+//   free( encrypted );
 
-  data_len = data_len = hex_decode( "0x40f73315d3f74703904e51e1c72686801de06a55417110e56280f1f8471a3802406d2110011e1f387f7b4c43258b0a1eedc558a3aac5aa2d20cf5e0d65d80db3", &data );
-  decrypted_len = rsa_decrypt( data, data_len, &decrypted, &private_key );
-  show_hex( decrypted, decrypted_len );
-  free( decrypted );
-}
+//   data_len = data_len = hex_decode( "0x40f73315d3f74703904e51e1c72686801de06a55417110e56280f1f8471a3802406d2110011e1f387f7b4c43258b0a1eedc558a3aac5aa2d20cf5e0d65d80db3", &data );
+//   decrypted_len = rsa_decrypt( data, data_len, &decrypted, &private_key );
+//   show_hex( decrypted, decrypted_len );
+//   free( decrypted );
+// }

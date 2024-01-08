@@ -25,6 +25,7 @@ typedef struct
 }
 digest_ctx;
 
+void show_hash(unsigned int* hash, int hash_len);
 void update_digest( digest_ctx *context, const unsigned char *input, int input_len );
 void finalize_digest( digest_ctx *context );
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "huge.h"
+#include "hex.h"
 
 /**
  * Extend the space for h by 1 char and set the LSB of that int
@@ -427,7 +428,7 @@ static void right_shift( huge *h1 )
  * be modified by this routine, but it will end up back where it
  * �started�.
  */
-void divide_( huge *dividend, huge *divisor, huge *quotient )
+void divide( huge *dividend, huge *divisor, huge *quotient )
 {
   int bit_size, bit_position;
 
@@ -475,7 +476,7 @@ void divide_( huge *dividend, huge *divisor, huge *quotient )
   while ( bit_size-- );
 }
 
-void divide(huge* dividend, huge* divisor, huge* quotient) {
+void divide_(huge* dividend, huge* divisor, huge* quotient) {
     int c = compare(dividend, divisor);
     int oriSign = dividend->sign;
     int sign = 0;//(dividend->sign != divisor->sign) ? 1 : 0;
@@ -637,7 +638,10 @@ void inv( huge *z, huge *a )
     j.sign = 0;
     subtract( &j, a );
   }
-
+  printf("a:");
+  show_hex(z->rep, z->size);
+  printf("b:");
+  show_hex(a->rep, a->size);
   while ( !( ( j.size == 1 ) && ( !j.rep[ 0 ] ) ) )
   {
     copy_huge( &remainder, &i );
@@ -668,22 +672,19 @@ void inv( huge *z, huge *a )
   }
 }
 
-// #include "hex.h"
-// #include <time.h>
-// int main() {
-//   time_t start, end;
-//   huge a, b, c, d;
-
-//   start = clock();
-//   for (int i = 1; i <= 10000; i++) {
-//     set_huge(&a, 2);
-//     set_huge(&b, i);
-//     set_huge(&c, 23);
-//     mod_pow(&a, &b, &c, &d);
-//     show_hex(d.rep, d.size);
-//   }
-//   end = clock();
-//   printf("duration: %fs", (double)(end - start) / CLOCKS_PER_SEC);
-
-//   return 0;
-// }
+#include <time.h>
+int main() {
+  huge a, b;
+  unsigned char *a1;
+  unsigned char *b1;
+  int size1, size2;
+  size1 = hex_decode((unsigned char*)"0x49fb8d96c64584d71bdfba03e56b62d3155e27eb", &a1);
+  size2 = hex_decode((unsigned char*)"0xac6fc137ef1674526aebc5f8f21f53f40fe0515f", &b1);
+  load_huge(&a, a1, size1);
+  load_huge(&b, b1, size2);
+  show_hex(a.rep, a.size);
+  show_hex(b.rep, b.size);
+  inv(&a, &b);
+  show_hex(a.rep, a.size);
+  return 0;
+}
