@@ -638,10 +638,6 @@ void inv( huge *z, huge *a )
     j.sign = 0;
     subtract( &j, a );
   }
-  printf("a:");
-  show_hex(z->rep, z->size);
-  printf("b:");
-  show_hex(a->rep, a->size);
   while ( !( ( j.size == 1 ) && ( !j.rep[ 0 ] ) ) )
   {
     copy_huge( &remainder, &i );
@@ -672,19 +668,19 @@ void inv( huge *z, huge *a )
   }
 }
 
-#include <time.h>
-int main() {
-  huge a, b;
-  unsigned char *a1;
-  unsigned char *b1;
-  int size1, size2;
-  size1 = hex_decode((unsigned char*)"0x49fb8d96c64584d71bdfba03e56b62d3155e27eb", &a1);
-  size2 = hex_decode((unsigned char*)"0xac6fc137ef1674526aebc5f8f21f53f40fe0515f", &b1);
-  load_huge(&a, a1, size1);
-  load_huge(&b, b1, size2);
-  show_hex(a.rep, a.size);
-  show_hex(b.rep, b.size);
-  inv(&a, &b);
-  show_hex(a.rep, a.size);
-  return 0;
-}
+// #include <time.h>
+// int main() {
+//   huge a, b;
+//   unsigned char *a1;
+//   unsigned char *b1;
+//   int size1, size2;
+//   size1 = hex_decode((unsigned char*)"0x49fb8d96c64584d71bdfba03e56b62d3155e27eb", &a1);
+//   size2 = hex_decode((unsigned char*)"0xac6fc137ef1674526aebc5f8f21f53f40fe0515f", &b1);
+//   load_huge(&a, a1, size1);
+//   load_huge(&b, b1, size2);
+//   show_hex(a.rep, a.size);
+//   show_hex(b.rep, b.size);
+//   inv(&a, &b);
+//   show_hex(a.rep, a.size);
+//   return 0;
+// }
