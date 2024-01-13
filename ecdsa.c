@@ -122,7 +122,7 @@ int ecdsa_verify( elliptic_curve *params,
   return match;
 }
 
-#define TEST_ECDSA
+// #define TEST_ECDSA
 #ifdef TEST_ECDSA
 int main( int argc, char *argv[ ] )
 {
