@@ -99,12 +99,7 @@ int ecdsa_verify( elliptic_curve *params,
   copy_huge( &Q.x, &public_key->x );
   copy_huge( &Q.y, &public_key->y ); 
 
-  show_hex(G.x.rep, G.x.size);
-  show_hex(z.rep, z.size);
-  show_hex(params->a.rep, params->a.size);
-  show_hex(params->p.rep, params->p.size);
   multiply_point( &G, &z, &params->a, &params->p );
-  show_hex(G.x.rep, G.x.size);
   multiply_point( &Q, &w, &params->a, &params->p );
   add_points( &G, &Q, &params->p );
   // r = x1 % n

@@ -468,31 +468,31 @@ c0c48bc47e87ce17
 6162636465666768
 */
 
-int main() {
-  // unsigned char target[7];
-  // permute( target, "12345678", pc1_table, 7 );
-  // show_hex(target, 7);
-  // for (int i = 0; i < 28; i++) {
-  //   rol(target);
-  //   show_hex(target, 7);
-  // }
-  // for (int i = 0; i < 28; i++) {
-  //   ror(target);
-  //   show_hex(target, 7);
-  // }
-  unsigned char enc[16];
-  unsigned char dec[16];
-  unsigned char iv[8] = "initialz";
-  // unsigned char iv[] = "initialz";
-  // des_encrypt( "abcdefgh", 8, output, iv, "password" );
-  // show_hex(output, 8);
-  // des_block_operate("abcdefgh", enc, "password", OP_ENCRYPT);
-  // show_hex(enc, 8);
-  // des_block_operate(enc, dec, "password", OP_DECRYPT);
-  // show_hex(dec, 8);
-  des3_encrypt((unsigned char*)"abcdefghabcdefgh", 16, enc, iv, (unsigned char*)"password12345678abcd1234");
-  show_hex(enc, 16);
-  memcpy(iv, "initialz", 8);
-  des3_decrypt(enc, 16, dec, iv, (unsigned char*)"password12345678abcd1234");
-  show_hex(dec, 16);
-}
+// int main() {
+//   // unsigned char target[7];
+//   // permute( target, "12345678", pc1_table, 7 );
+//   // show_hex(target, 7);
+//   // for (int i = 0; i < 28; i++) {
+//   //   rol(target);
+//   //   show_hex(target, 7);
+//   // }
+//   // for (int i = 0; i < 28; i++) {
+//   //   ror(target);
+//   //   show_hex(target, 7);
+//   // }
+//   unsigned char enc[16];
+//   unsigned char dec[16];
+//   unsigned char iv[8] = "initialz";
+//   // unsigned char iv[] = "initialz";
+//   // des_encrypt( "abcdefgh", 8, output, iv, "password" );
+//   // show_hex(output, 8);
+//   // des_block_operate("abcdefgh", enc, "password", OP_ENCRYPT);
+//   // show_hex(enc, 8);
+//   // des_block_operate(enc, dec, "password", OP_DECRYPT);
+//   // show_hex(dec, 8);
+//   des3_encrypt((unsigned char*)"abcdefghabcdefgh", 16, enc, iv, (unsigned char*)"password12345678abcd1234");
+//   show_hex(enc, 16);
+//   memcpy(iv, "initialz", 8);
+//   des3_decrypt(enc, 16, dec, iv, (unsigned char*)"password12345678abcd1234");
+//   show_hex(dec, 16);
+// }
