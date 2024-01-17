@@ -18,6 +18,7 @@ typedef enum
 {
   md5WithRSAEncryption,
   shaWithRSAEncryption,
+  sha256WithRSAEncryption,
   shaWithDSA
 }
 signatureAlgorithmIdentifier;

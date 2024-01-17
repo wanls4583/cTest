@@ -125,6 +125,8 @@ static const unsigned char OID_sha1WithRSA[] =
   { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x05 };
 static const unsigned char OID_sha1WithDSA[] = 
   { 0x2A, 0x86, 0x48, 0xCE, 0x38, 0x04, 0x03 };
+static const unsigned char OID_sha256WithRSA[] = 
+  { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0B };
 
 
 static int parse_algorithm_identifier( signatureAlgorithmIdentifier *target, 
@@ -148,6 +150,10 @@ static int parse_algorithm_identifier( signatureAlgorithmIdentifier *target,
   else if ( !memcmp( oid->data, OID_sha1WithRSA, oid->length ) )
   {
     *target = shaWithRSAEncryption;
+  } 
+  else if ( !memcmp( oid->data, OID_sha256WithRSA, oid->length ) )
+  {
+    *target = sha256WithRSAEncryption;
   } 
   else
   {
@@ -507,7 +513,7 @@ static int parse_extension( x509_certificate *certificate,
     }
     asn1free( &key_usage_bit_string );
   } 
-  // TODO recognize and parse extensions – there are several
+  // TODO recognize and parse extensions ï¿½ there are several
 
   return 0;
 }
@@ -716,6 +722,7 @@ int parse_x509_certificate( const unsigned char *buffer,
   {
    case md5WithRSAEncryption:
    case shaWithRSAEncryption:
+   case sha256WithRSAEncryption:
      if ( parse_rsa_signature_value( parsed_certificate, signatureValue ) )
      {
        return 42;
@@ -737,6 +744,8 @@ int parse_x509_certificate( const unsigned char *buffer,
     case shaWithDSA:
       new_sha1_digest( &digest );
       break;
+    case sha256WithRSAEncryption:
+      new_sha256_digest(&digest);
     default:
       break;
   }
@@ -794,21 +803,21 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
       print_huge( 
         certificate->tbsCertificate.subjectPublicKeyInfo.rsa_public_key.exponent );
       break;
-  case dsa:
-   printf( "DSA\n" );
-   printf( "y: " );
-   print_huge( 
-    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_public_key );
-   printf( "p: " );
-   print_huge( 
-    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.p );
-   printf( "q: " );
-   print_huge( 
-    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.q );
-   printf( "g: " );
-   print_huge( 
-    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.g );
-   break;
+    case dsa:
+      printf( "DSA\n" );
+      printf( "y: " );
+      print_huge( 
+        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_public_key );
+      printf( "p: " );
+      print_huge( 
+        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.p );
+      printf( "q: " );
+      print_huge( 
+        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.q );
+      printf( "g: " );
+      print_huge( 
+        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.g );
+      break;
     case dh:
       printf( "DH\n" );
       break;
@@ -824,11 +833,14 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
     case md5WithRSAEncryption:
       printf( "MD5 with RSA Encryption\n" );
       break;
-  case shaWithDSA:
-   printf( "SHA-1 with DSA\n" );
-   break;
+    case shaWithDSA:
+      printf( "SHA-1 with DSA\n" );
+      break;
     case shaWithRSAEncryption:
       printf( "SHA-1 with RSA Encryption\n" );
+      break;
+    case sha256WithRSAEncryption:
+      printf( "SHA-256 with RSA Encryption\n" );
       break;
   }
  
@@ -838,15 +850,16 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
   {
     case md5WithRSAEncryption:
     case shaWithRSAEncryption:
+    case sha256WithRSAEncryption:
       print_huge( &certificate->rsa_signature_value );
       break;
-  case shaWithDSA:
-   printf( "\n\tr:" );
-   print_huge( &certificate->dsa_signature_value.r );
-   printf( "\ts:" );
-   print_huge( &certificate->dsa_signature_value.s );
-   break;
-  }
+    case shaWithDSA:
+      printf( "\n\tr:" );
+      print_huge( &certificate->dsa_signature_value.r );
+      printf( "\ts:" );
+      print_huge( &certificate->dsa_signature_value.s );
+      break;
+    }
   printf( "\n" );
  
   if ( certificate->tbsCertificate.certificate_authority )
@@ -859,15 +872,18 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
   } 
 } 
 
+#define TEST_X509
 #ifdef TEST_X509
-int main( int argc, char *argv[ ] )
+int main()
 {
+  int argc = 3;
+  char *argv[] = {"", "-pem", "/Users/lisong/Downloads/rootCA.crt"};
   int certificate_file;
   struct stat certificate_file_stat;
   char *buffer, *bufptr;
   int buffer_size;
   int bytes_read;
-  int error_code;
+  int code;
  
   signed_x509_certificate certificate;
  
@@ -917,7 +933,7 @@ int main( int argc, char *argv[ ] )
 
   // now parse it
   init_x509_certificate( &certificate );
-  if ( !( error_code = parse_x509_certificate( buffer, buffer_size, 
+  if ( !( code = parse_x509_certificate( buffer, buffer_size, 
                          &certificate ) ) )
   {
     printf( "X509 Certificate:\n" );
@@ -928,6 +944,7 @@ int main( int argc, char *argv[ ] )
     {
      case md5WithRSAEncryption:
      case shaWithRSAEncryption:
+     case sha256WithRSAEncryption:
        if ( validate_certificate_rsa( &certificate,
         &certificate.tbsCertificate.subjectPublicKeyInfo.rsa_public_key ) )
        {
@@ -938,20 +955,20 @@ int main( int argc, char *argv[ ] )
          printf( "Certificate is corrupt or not self-signed.\n" );
        }
        break;
-   case shaWithDSA:
-    if ( validate_certificate_dsa( &certificate ) )
-    {
-     printf( "Certificate is a valid self-signed certificate.\n" );
-    }
-    else
-    {
-     printf( "Certificate is corrupt or not self-signed.\n" );
-    }
+    case shaWithDSA:
+      if ( validate_certificate_dsa( &certificate ) )
+      {
+      printf( "Certificate is a valid self-signed certificate.\n" );
+      }
+      else
+      {
+      printf( "Certificate is corrupt or not self-signed.\n" );
+      }
     }
   }
   else
   {
-    printf( "error parsing certificate: %d\n", error_code );
+    printf( "error parsing certificate: %d\n", code );
   }
 
   free_x509_certificate( &certificate );
