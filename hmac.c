@@ -58,11 +58,11 @@ void hmac( const unsigned char *key,
   {
     opad[ i ] ^= key[ i ];
   }
-  for (int i = 0; i < hash1.hash_len * sizeof( int ); i++ )
-  {
-    printf( "%.02x", ( ( unsigned char *) hash1.hash )[ i ] );
-  }
-  printf("\n");
+  // for (int i = 0; i < hash1.hash_len * sizeof( int ); i++ )
+  // {
+  //   printf( "%.02x", ( ( unsigned char *) hash1.hash )[ i ] );
+  // }
+  // printf("\n");
   update_digest( digest, opad, DIGEST_BLOCK_SIZE );
   update_digest( digest, ( unsigned char * ) hash1.hash, 
   hash1.hash_len * sizeof( int ) );

@@ -872,7 +872,7 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
   } 
 } 
 
-#define TEST_X509
+// #define TEST_X509
 #ifdef TEST_X509
 int main()
 {
