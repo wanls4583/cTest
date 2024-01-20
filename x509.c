@@ -8,6 +8,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <assert.h>
 #include "x509.h"
 #include "asn1.h"
 #include "huge.h"
@@ -92,6 +93,7 @@ static void free_x500_name( name *x500_name )
 }
 
 void free_x509_certificate( signed_x509_certificate *certificate )
+
 {
   free_huge( &certificate->tbsCertificate.serialNumber );
   free_x500_name( &certificate->tbsCertificate.issuer );
@@ -125,8 +127,6 @@ static const unsigned char OID_sha1WithRSA[] =
   { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x05 };
 static const unsigned char OID_sha1WithDSA[] = 
   { 0x2A, 0x86, 0x48, 0xCE, 0x38, 0x04, 0x03 };
-static const unsigned char OID_sha256WithRSA[] = 
-  { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0B };
 
 
 static int parse_algorithm_identifier( signatureAlgorithmIdentifier *target, 
@@ -150,10 +150,6 @@ static int parse_algorithm_identifier( signatureAlgorithmIdentifier *target,
   else if ( !memcmp( oid->data, OID_sha1WithRSA, oid->length ) )
   {
     *target = shaWithRSAEncryption;
-  } 
-  else if ( !memcmp( oid->data, OID_sha256WithRSA, oid->length ) )
-  {
-    *target = sha256WithRSAEncryption;
   } 
   else
   {
@@ -513,7 +509,7 @@ static int parse_extension( x509_certificate *certificate,
     }
     asn1free( &key_usage_bit_string );
   } 
-  // TODO recognize and parse extensions ï¿½ there are several
+  // TODO recognize and parse extensions – there are several
 
   return 0;
 }
@@ -722,7 +718,6 @@ int parse_x509_certificate( const unsigned char *buffer,
   {
    case md5WithRSAEncryption:
    case shaWithRSAEncryption:
-   case sha256WithRSAEncryption:
      if ( parse_rsa_signature_value( parsed_certificate, signatureValue ) )
      {
        return 42;
@@ -744,8 +739,6 @@ int parse_x509_certificate( const unsigned char *buffer,
     case shaWithDSA:
       new_sha1_digest( &digest );
       break;
-    case sha256WithRSAEncryption:
-      new_sha256_digest(&digest);
     default:
       break;
   }
@@ -759,6 +752,83 @@ int parse_x509_certificate( const unsigned char *buffer,
   asn1free( &certificate );
 
   return 0;
+}
+
+/**
+ * This is called by "receive_server_hello" when the "certificate" PDU
+ * is encountered.  The input to this function should be a certificate chain.
+ * The most important certificate is the first one, since this contains the
+ * public key of the subject as well as the DNS name information (which
+ * has to be verified against).
+ * Each subsequent certificate acts as a signer for the previous certificate.
+ * Each signature is verified by this function.
+ * The public key of the first certificate in the chain will be returned in 
+ * "server_public_key" (subsequent certificates are just needed for signature 
+ * verification).
+ * TODO verify signatures.
+ */
+char *parse_x509_chain( unsigned char *buffer,
+                        int pdu_length,
+                        public_key_info *server_public_key )
+{
+  int pos;
+  signed_x509_certificate certificate;
+  unsigned int chain_length, certificate_length;
+  unsigned char *ptr;
+  ptr = buffer;
+  
+  pos = 0;
+  
+  // TODO this won't work on a big-endian machine
+  chain_length = ( *ptr << 16 ) | ( *( ptr + 1 ) << 8 ) | ( *( ptr + 2 ) );
+  ptr += 3;
+  
+  // The chain length is actually redundant since the length of the PDU has
+  // already been input.
+  assert ( chain_length == ( pdu_length - 3 ) );
+  
+  while ( ( ptr - buffer ) < pdu_length )
+  {
+    // TODO this won't work on a big-endian machine
+    certificate_length = ( *ptr << 16 ) | ( *( ptr + 1 ) << 8 ) | 
+      ( *( ptr + 2 ) ); 
+    ptr += 3;
+    
+     init_x509_certificate( &certificate );
+
+    parse_x509_certificate( ( void * ) ptr, certificate_length, &certificate );
+    if ( !pos++ )
+    {
+      server_public_key->algorithm = 
+        certificate.tbsCertificate.subjectPublicKeyInfo.algorithm;
+      switch ( server_public_key->algorithm )
+      {
+        case rsa:
+          server_public_key->rsa_public_key.modulus = ( huge * ) malloc( sizeof( huge ) );
+          server_public_key->rsa_public_key.exponent = ( huge * ) malloc( sizeof( huge ) );
+          set_huge( server_public_key->rsa_public_key.modulus, 0 );
+          set_huge( server_public_key->rsa_public_key.exponent, 0 );
+          copy_huge( server_public_key-> rsa_public_key.modulus, 
+            certificate.tbsCertificate.subjectPublicKeyInfo.
+            rsa_public_key.modulus );
+          copy_huge( server_public_key-> rsa_public_key.exponent,
+            certificate.tbsCertificate.subjectPublicKeyInfo.
+            rsa_public_key.exponent );
+          break;
+        default:
+          break;
+      }
+    }
+    
+    ptr += certificate_length;
+
+    // TODO compute the hash of the certificate so that it can be validated by
+    // the next one
+    
+    free_x509_certificate( &certificate );
+  }
+  
+  return ptr;
 }
 
 static void output_x500_name( name *x500_name )
@@ -803,21 +873,21 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
       print_huge( 
         certificate->tbsCertificate.subjectPublicKeyInfo.rsa_public_key.exponent );
       break;
-    case dsa:
-      printf( "DSA\n" );
-      printf( "y: " );
-      print_huge( 
-        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_public_key );
-      printf( "p: " );
-      print_huge( 
-        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.p );
-      printf( "q: " );
-      print_huge( 
-        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.q );
-      printf( "g: " );
-      print_huge( 
-        &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.g );
-      break;
+  case dsa:
+   printf( "DSA\n" );
+   printf( "y: " );
+   print_huge( 
+    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_public_key );
+   printf( "p: " );
+   print_huge( 
+    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.p );
+   printf( "q: " );
+   print_huge( 
+    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.q );
+   printf( "g: " );
+   print_huge( 
+    &certificate->tbsCertificate.subjectPublicKeyInfo.dsa_parameters.g );
+   break;
     case dh:
       printf( "DH\n" );
       break;
@@ -833,14 +903,11 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
     case md5WithRSAEncryption:
       printf( "MD5 with RSA Encryption\n" );
       break;
-    case shaWithDSA:
-      printf( "SHA-1 with DSA\n" );
-      break;
+  case shaWithDSA:
+   printf( "SHA-1 with DSA\n" );
+   break;
     case shaWithRSAEncryption:
       printf( "SHA-1 with RSA Encryption\n" );
-      break;
-    case sha256WithRSAEncryption:
-      printf( "SHA-256 with RSA Encryption\n" );
       break;
   }
  
@@ -850,16 +917,15 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
   {
     case md5WithRSAEncryption:
     case shaWithRSAEncryption:
-    case sha256WithRSAEncryption:
       print_huge( &certificate->rsa_signature_value );
       break;
-    case shaWithDSA:
-      printf( "\n\tr:" );
-      print_huge( &certificate->dsa_signature_value.r );
-      printf( "\ts:" );
-      print_huge( &certificate->dsa_signature_value.s );
-      break;
-    }
+  case shaWithDSA:
+   printf( "\n\tr:" );
+   print_huge( &certificate->dsa_signature_value.r );
+   printf( "\ts:" );
+   print_huge( &certificate->dsa_signature_value.s );
+   break;
+  }
   printf( "\n" );
  
   if ( certificate->tbsCertificate.certificate_authority )
@@ -872,18 +938,15 @@ static void display_x509_certificate( signed_x509_certificate *certificate )
   } 
 } 
 
-// #define TEST_X509
 #ifdef TEST_X509
-int main()
+int main( int argc, char *argv[ ] )
 {
-  int argc = 3;
-  char *argv[] = {"", "-pem", "/Users/lisong/Downloads/rootCA.crt"};
   int certificate_file;
   struct stat certificate_file_stat;
   char *buffer, *bufptr;
   int buffer_size;
   int bytes_read;
-  int code;
+  int error_code;
  
   signed_x509_certificate certificate;
  
@@ -933,7 +996,7 @@ int main()
 
   // now parse it
   init_x509_certificate( &certificate );
-  if ( !( code = parse_x509_certificate( buffer, buffer_size, 
+  if ( !( error_code = parse_x509_certificate( buffer, buffer_size, 
                          &certificate ) ) )
   {
     printf( "X509 Certificate:\n" );
@@ -944,7 +1007,6 @@ int main()
     {
      case md5WithRSAEncryption:
      case shaWithRSAEncryption:
-     case sha256WithRSAEncryption:
        if ( validate_certificate_rsa( &certificate,
         &certificate.tbsCertificate.subjectPublicKeyInfo.rsa_public_key ) )
        {
@@ -955,20 +1017,20 @@ int main()
          printf( "Certificate is corrupt or not self-signed.\n" );
        }
        break;
-    case shaWithDSA:
-      if ( validate_certificate_dsa( &certificate ) )
-      {
-      printf( "Certificate is a valid self-signed certificate.\n" );
-      }
-      else
-      {
-      printf( "Certificate is corrupt or not self-signed.\n" );
-      }
+   case shaWithDSA:
+    if ( validate_certificate_dsa( &certificate ) )
+    {
+     printf( "Certificate is a valid self-signed certificate.\n" );
+    }
+    else
+    {
+     printf( "Certificate is corrupt or not self-signed.\n" );
+    }
     }
   }
   else
   {
-    printf( "error parsing certificate: %d\n", code );
+    printf( "error parsing certificate: %d\n", error_code );
   }
 
   free_x509_certificate( &certificate );

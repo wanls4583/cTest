@@ -153,7 +153,7 @@ int parse_pkcs8_private_key( rsa_key *privkey,
   return 0;
 }
 
-#define TEST_PRIVKEY
+// #define TEST_PRIVKEY
 #ifdef TEST_PRIVKEY
 int main()
 {   
